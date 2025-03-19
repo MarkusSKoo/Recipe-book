@@ -1,6 +1,5 @@
 import sqlite3
-from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
@@ -11,6 +10,47 @@ app.secret_key = config.secret_key
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/new_recipe")
+def new_recipe():
+    return render_template("new_recipe.html")
+
+@app.route("/create_recipe", methods=["POST"])
+def create_recipe():
+    if "username" not in session:
+        return redirect("/login")
+
+    title = request.form["title"]
+    description = request.form["description"]
+    category = request.form["category"]
+    ingredients = request.form["ingredients"]
+    instructions = request.form["instructions"]
+
+    print(f"Received form data: title={title}, description={description}, category={category}, ingredients={ingredients}, instructions={instructions}")
+
+    user_id_query = "SELECT id FROM users WHERE username = ?"
+    user_id_result = db.query(user_id_query, [session["username"]])
+    if not user_id_result:
+        return "VIRHE: Käyttäjää ei löydy"
+    user_id = user_id_result[0]["id"]
+
+    category_id_query = "SELECT id FROM categories WHERE name = ?"
+    category_id_result = db.query(category_id_query, [category])
+    print(f"Category query result: {category_id_result}")
+    if not category_id_result:
+        # Jos kategoriaa ei löydy, lisätään se
+        insert_category_query = "INSERT INTO categories (name) VALUES (?)"
+        db.execute(insert_category_query, [category])
+        category_id_result = db.query(category_id_query, [category])
+        if not category_id_result:
+            return "VIRHE: Kategorian lisääminen epäonnistui"
+    category_id = category_id_result[0]["id"]
+
+    sql = """INSERT INTO recipes (user_id, title, description, category_id, ingredients, instructions)
+             VALUES (?, ?, ?, ?, ?, ?)"""
+    db.execute(sql, [user_id, title, description, category_id, ingredients, instructions])
+
+    return redirect("/")
 
 @app.route("/register")
 def register():
@@ -39,14 +79,20 @@ def login():
         return render_template("login.html")
 
     if request.method == "POST":
-
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT password_hash FROM users WHERE username = ?"
-        password_hash = db.query(sql, [username])[0][0]
+        sql = "SELECT id, password_hash FROM users WHERE username = ?"
+        result = db.query(sql, [username])
+
+        if not result:
+            return "VIRHE: väärä tunnus tai salasana"
+
+        user_id = result[0]["id"]
+        password_hash = result[0]["password_hash"]
 
         if check_password_hash(password_hash, password):
+            session["user_id"] = user_id
             session["username"] = username
             return redirect("/")
         else:
@@ -54,5 +100,6 @@ def login():
 
 @app.route("/logout")
 def logout():
+    del session["user_id"]
     del session["username"]
     return redirect("/")

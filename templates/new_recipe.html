@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Uusi resepti</title>
+</head>
+
+<body>
+  <h1>Uusi resepti</h1>
+  <form action="/create_recipe" method="post">
+    <p>
+      Otsikko: <br />
+      <input type="text" name="title" required />
+    </p>
+    <p>
+      Kuvaus: <br />
+      <textarea name="description" rows="8" cols="60" required></textarea>
+    </p>
+    <p>
+      Kategoria: <br />
+      <select name="category" required>
+        <option value="">Valitse kategoria</option>
+        <option value="alkuruoka">Alkuruoka</option>
+        <option value="pääruoka">Pääruoka</option>
+        <option value="jälkiruoka">Jälkiruoka</option>
+        <option value="intialainen">Intialainen</option>
+        <option value="vegaaninen">Vegaaninen</option>
+        <option value="eurooppalainen">Eurooppalainen</option>
+        <option value="Kiinalainen">Kiinalainen</option>
+        <option value="tulinen">Tulinen</option>
+        <option value="ei tulinen">Ei tulinen</option>
+        <option value="muu">Muu</option>
+      </select>
+    </p>
+    <p>
+      Ainekset: <br />
+      <textarea name="ingredients" rows="8" cols="60" required></textarea>
+    </p>
+    <p>
+      Valmistusohje: <br />
+      <textarea name="instructions" rows="8" cols="60" required></textarea>
+    </p>
+    <p>
+      <input type="submit" value="Luo resepti" />
+    </p>
+  </form>
+</body>
+
+</html>
