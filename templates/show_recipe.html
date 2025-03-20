@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{{ recipe.title }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      font-size: 24px;
+      color: #333;
+    }
+    p {
+      font-size: 18px;
+      color: #555;
+    }
+    .preserve-whitespace {
+      white-space: pre-wrap;
+      font-size: 18px;
+      color: #555;
+    }
+    a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>{{ recipe.title }}</h1>
+  
+  <p><strong>Kuvaus:</strong> {{ recipe.description }}</p>
+  <p><strong>Kategoria:</strong> {{ recipe.category }}</p>
+  <p><strong>Ainekset:</strong></p>
+  <p class="preserve-whitespace">{{ recipe.ingredients }}</p>
+  <p><strong>Ohjeet:</strong></p>
+  <p class="preserve-whitespace">{{ recipe.instructions }}</p>
+
+  <p><a href="/">Takaisin</a></p>
+</body>
+
+</html>

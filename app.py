@@ -10,7 +10,13 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    all_recipes = recipes.get_recipes()
+    return render_template("index.html", recipes=all_recipes)
+
+@app.route("/recipe/<int:recipe_id>")
+def show_recipe(recipe_id):
+    recipe = recipes.get_recipe(recipe_id)
+    return render_template("show_recipe.html", recipe=recipe)
 
 @app.route("/new_recipe")
 def new_recipe():
@@ -27,10 +33,6 @@ def create_recipe():
     ingredients = request.form["ingredients"]
     instructions = request.form["instructions"]
 
-    recipes.add_recipe(user_id, title, description, category_id, ingredients, instructions)
-
-    print(f"Received form data: title={title}, description={description}, category={category}, ingredients={ingredients}, instructions={instructions}")
-
     user_id_query = "SELECT id FROM users WHERE username = ?"
     user_id_result = db.query(user_id_query, [session["username"]])
     if not user_id_result:
@@ -41,13 +43,16 @@ def create_recipe():
     category_id_result = db.query(category_id_query, [category])
     print(f"Category query result: {category_id_result}")
     if not category_id_result:
-        # Jos kategoriaa ei löydy, lisätään se
         insert_category_query = "INSERT INTO categories (name) VALUES (?)"
         db.execute(insert_category_query, [category])
         category_id_result = db.query(category_id_query, [category])
         if not category_id_result:
             return "VIRHE: Kategorian lisääminen epäonnistui"
     category_id = category_id_result[0]["id"]
+
+    recipes.add_recipe(user_id, title, description, category_id, ingredients, instructions)
+
+    print(f"Received form data: title={title}, description={description}, category={category}, ingredients={ingredients}, instructions={instructions}")
 
     return redirect("/")
 

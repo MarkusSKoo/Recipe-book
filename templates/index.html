@@ -23,6 +23,14 @@
 
   <p>
     <a href="/new_recipe">Uusi resepti</a>
+
+  <h2>Recipes</h2>
+
+  <ul>
+    {% for recipe in recipes %}
+    <li><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></li>
+    {% endfor %}
+  </ul>
   </p>
 </body>
 
