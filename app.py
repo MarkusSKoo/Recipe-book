@@ -56,6 +56,47 @@ def create_recipe():
 
     return redirect("/")
 
+@app.route("/edit_recipe/<int:recipe_id>")
+def edit_recipe(recipe_id):
+    recipe = recipes.get_recipe(recipe_id)
+    return render_template("edit_recipe.html", recipe=recipe)
+
+@app.route("/update_recipe", methods=["POST"])
+def update_recipe():
+    if "username" not in session:
+        return redirect("/login")
+
+    recipe_id = request.form["recipe_id"]
+    title = request.form["title"]
+    description = request.form["description"]
+    category = request.form["category"]
+    ingredients = request.form["ingredients"]
+    instructions = request.form["instructions"]
+
+    user_id_query = "SELECT user_id FROM recipes WHERE id = ?"
+    user_id_result = db.query(user_id_query, [recipe_id])
+    if not user_id_result or user_id_result[0]["user_id"] != session["user_id"]:
+        return "VIRHE: Sinulla ei ole oikeutta muokata tätä reseptiä"
+
+    category_id_query = "SELECT id FROM categories WHERE name = ?"
+    category_id_result = db.query(category_id_query, [category])
+    if not category_id_result:
+        insert_category_query = "INSERT INTO categories (name) VALUES (?)"
+        db.execute(insert_category_query, [category])
+        category_id_result = db.query(category_id_query, [category])
+        if not category_id_result:
+            return "VIRHE: Kategorian lisääminen epäonnistui"
+    category_id = category_id_result[0]["id"]
+
+    update_query = """
+    UPDATE recipes
+    SET title = ?, description = ?, category_id = ?, ingredients = ?, instructions = ?
+    WHERE id = ?
+    """
+    db.execute(update_query, [title, description, category_id, ingredients, instructions, recipe_id])
+
+    return redirect(f"/recipe/{recipe_id}")
+
 @app.route("/register")
 def register():
     return render_template("register.html")

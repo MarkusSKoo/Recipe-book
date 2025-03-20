@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Reseptin muokkaus</title>
+</head>
+
+<body>
+  <h1>Reseptin muokkaus</h1>
+  <form action="/update_recipe" method="post">
+    <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+    <p>
+      Otsikko: <br />
+      <input type="text" name="title" value="{{ recipe.title }}" required />
+    </p>
+    <p>
+      Kuvaus: <br />
+      <textarea name="description" rows="8" cols="60" required>{{ recipe.description }}</textarea>
+    </p>
+    <p>
+      Kategoria: <br />
+      <select name="category" required>
+        <option value="">Valitse kategoria</option>
+        <option value="alkuruoka" {% if recipe.category == 'alkuruoka' %}selected{% endif %}>Alkuruoka</option>
+        <option value="pääruoka" {% if recipe.category == 'pääruoka' %}selected{% endif %}>Pääruoka</option>
+        <option value="jälkiruoka" {% if recipe.category == 'jälkiruoka' %}selected{% endif %}>Jälkiruoka</option>
+        <option value="intialainen" {% if recipe.category == 'intialainen' %}selected{% endif %}>Intialainen</option>
+        <option value="vegaaninen" {% if recipe.category == 'vegaaninen' %}selected{% endif %}>Vegaaninen</option>
+        <option value="eurooppalainen" {% if recipe.category == 'eurooppalainen' %}selected{% endif %}>Eurooppalainen</option>
+        <option value="Kiinalainen" {% if recipe.category == 'Kiinalainen' %}selected{% endif %}>Kiinalainen</option>
+        <option value="tulinen" {% if recipe.category == 'tulinen' %}selected{% endif %}>Tulinen</option>
+        <option value="ei tulinen" {% if recipe.category == 'ei tulinen' %}selected{% endif %}>Ei tulinen</option>
+        <option value="muu" {% if recipe.category == 'muu' %}selected{% endif %}>Muu</option>
+      </select>
+    </p>
+    <p>
+      Ainekset: <br />
+      <textarea name="ingredients" rows="8" cols="60" required>{{ recipe.ingredients }}</textarea>
+    </p>
+    <p>
+      Valmistusohje: <br />
+      <textarea name="instructions" rows="8" cols="60" required>{{ recipe.instructions }}</textarea>
+    </p>
+    <p>
+      <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+      <input type="submit" value="Päivitä resepti" />
+    </p>
+  </form>
+</body>
+
+</html>
