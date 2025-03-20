@@ -3,6 +3,7 @@ from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
+import recipes
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -26,6 +27,8 @@ def create_recipe():
     ingredients = request.form["ingredients"]
     instructions = request.form["instructions"]
 
+    recipes.add_recipe(user_id, title, description, category_id, ingredients, instructions)
+
     print(f"Received form data: title={title}, description={description}, category={category}, ingredients={ingredients}, instructions={instructions}")
 
     user_id_query = "SELECT id FROM users WHERE username = ?"
@@ -45,10 +48,6 @@ def create_recipe():
         if not category_id_result:
             return "VIRHE: Kategorian lisääminen epäonnistui"
     category_id = category_id_result[0]["id"]
-
-    sql = """INSERT INTO recipes (user_id, title, description, category_id, ingredients, instructions)
-             VALUES (?, ?, ?, ?, ?, ?)"""
-    db.execute(sql, [user_id, title, description, category_id, ingredients, instructions])
 
     return redirect("/")
 
