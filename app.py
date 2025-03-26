@@ -4,9 +4,12 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
 import recipes
+from datetime import timedelta
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
 @app.route("/")
 def index():
@@ -97,6 +100,27 @@ def update_recipe():
 
     return redirect(f"/recipe/{recipe_id}")
 
+@app.route("/remove_recipe/<int:recipe_id>")
+def remove_recipe(recipe_id):
+    recipe = recipes.get_recipe(recipe_id)
+    return render_template("remove_recipe.html", recipe=recipe)
+
+@app.route("/remove_recipe", methods=["POST"])
+def remove_recipe_post():
+    if "username" not in session:
+        return redirect("/login")
+
+    recipe_id = request.form["recipe_id"]
+    if "remove" in request.form:
+        user_id_query = "SELECT user_id FROM recipes WHERE id = ?"
+        user_id_result = db.query(user_id_query, [recipe_id])
+        if not user_id_result or user_id_result[0]["user_id"] != session["user_id"]:
+            return "VIRHE: Sinulla ei ole oikeutta poistaa tätä reseptiä"
+        recipes.delete_recipe(recipe_id)
+        return redirect("/")
+    else:
+        return redirect("/recipe/" + str(recipe_id))
+
 @app.route("/register")
 def register():
     return render_template("register.html")
@@ -137,6 +161,7 @@ def login():
         password_hash = result[0]["password_hash"]
 
         if check_password_hash(password_hash, password):
+            session.permanent = True  # Aseta session pysyväksi
             session["user_id"] = user_id
             session["username"] = username
             return redirect("/")

@@ -32,3 +32,7 @@ def update_recipe(recipe_id, title, description, ingredients, instructions, cate
                                 category = ?
                             WHERE id = ?"""
     db.execute(sql, [title, description, ingredients, instructions, category, recipe_id])
+
+def delete_recipe(recipe_id):
+    sql = "DELETE FROM recipes WHERE id = ?"
+    db.execute(sql, [recipe_id])
