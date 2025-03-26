@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, abort, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
@@ -72,6 +72,8 @@ def create_recipe():
 @app.route("/edit_recipe/<int:recipe_id>")
 def edit_recipe(recipe_id):
     recipe = recipes.get_recipe(recipe_id)
+    if recipe["user_id"] != session["user_id"]:
+        abort(403)
     return render_template("edit_recipe.html", recipe=recipe)
 
 @app.route("/update_recipe", methods=["POST"])
@@ -89,7 +91,7 @@ def update_recipe():
     user_id_query = "SELECT user_id FROM recipes WHERE id = ?"
     user_id_result = db.query(user_id_query, [recipe_id])
     if not user_id_result or user_id_result[0]["user_id"] != session["user_id"]:
-        return "VIRHE: Sinulla ei ole oikeutta muokata tätä reseptiä"
+        abort(403)
 
     category_id_query = "SELECT id FROM categories WHERE name = ?"
     category_id_result = db.query(category_id_query, [category])
@@ -113,6 +115,8 @@ def update_recipe():
 @app.route("/remove_recipe/<int:recipe_id>")
 def remove_recipe(recipe_id):
     recipe = recipes.get_recipe(recipe_id)
+    if recipe["user_id"] != session["user_id"]:
+        abort(403)
     return render_template("remove_recipe.html", recipe=recipe)
 
 @app.route("/remove_recipe", methods=["POST"])
@@ -125,7 +129,7 @@ def remove_recipe_post():
         user_id_query = "SELECT user_id FROM recipes WHERE id = ?"
         user_id_result = db.query(user_id_query, [recipe_id])
         if not user_id_result or user_id_result[0]["user_id"] != session["user_id"]:
-            return "VIRHE: Sinulla ei ole oikeutta poistaa tätä reseptiä"
+            abort(403)
         recipes.delete_recipe(recipe_id)
         return redirect("/")
     else:
