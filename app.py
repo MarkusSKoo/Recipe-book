@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
 import recipes
+import users
 from datetime import timedelta
 
 app = Flask(__name__)
@@ -46,26 +47,18 @@ def create_recipe():
     ingredients = request.form["ingredients"]
     instructions = request.form["instructions"]
 
-    user_id_query = "SELECT id FROM users WHERE username = ?"
-    user_id_result = db.query(user_id_query, [session["username"]])
-    if not user_id_result:
-        return "VIRHE: Käyttäjää ei löydy"
-    user_id = user_id_result[0]["id"]
+    if not all([title, description, category, ingredients, instructions]):
+        return "VIRHE: Kaikki kentät ovat pakollisia"
 
-    category_id_query = "SELECT id FROM categories WHERE name = ?"
-    category_id_result = db.query(category_id_query, [category])
-    print(f"Category query result: {category_id_result}")
-    if not category_id_result:
-        insert_category_query = "INSERT INTO categories (name) VALUES (?)"
-        db.execute(insert_category_query, [category])
-        category_id_result = db.query(category_id_query, [category])
-        if not category_id_result:
-            return "VIRHE: Kategorian lisääminen epäonnistui"
-    category_id = category_id_result[0]["id"]
+    user_id = users.get_user_id(session["username"])
+    if not user_id:
+        return "VIRHE: Käyttäjää ei löydy"
+
+    category_id = recipes.get_or_create_category(category)
+    if not category_id:
+        return "VIRHE: Kategorian lisääminen epäonnistui"
 
     recipes.add_recipe(user_id, title, description, category_id, ingredients, instructions)
-
-    print(f"Received form data: title={title}, description={description}, category={category}, ingredients={ingredients}, instructions={instructions}")
 
     return redirect("/")
 
@@ -88,27 +81,17 @@ def update_recipe():
     ingredients = request.form["ingredients"]
     instructions = request.form["instructions"]
 
-    user_id_query = "SELECT user_id FROM recipes WHERE id = ?"
-    user_id_result = db.query(user_id_query, [recipe_id])
-    if not user_id_result or user_id_result[0]["user_id"] != session["user_id"]:
+    if not all([title, description, category, ingredients, instructions]):
+        return "VIRHE: Kaikki kentät ovat pakollisia"
+
+    if not recipes.is_recipe_owner(recipe_id, session["user_id"]):
         abort(403)
 
-    category_id_query = "SELECT id FROM categories WHERE name = ?"
-    category_id_result = db.query(category_id_query, [category])
-    if not category_id_result:
-        insert_category_query = "INSERT INTO categories (name) VALUES (?)"
-        db.execute(insert_category_query, [category])
-        category_id_result = db.query(category_id_query, [category])
-        if not category_id_result:
-            return "VIRHE: Kategorian lisääminen epäonnistui"
-    category_id = category_id_result[0]["id"]
+    category_id = recipes.get_or_create_category(category)
+    if not category_id:
+        return "VIRHE: Kategorian lisääminen epäonnistui"
 
-    update_query = """
-    UPDATE recipes
-    SET title = ?, description = ?, category_id = ?, ingredients = ?, instructions = ?
-    WHERE id = ?
-    """
-    db.execute(update_query, [title, description, category_id, ingredients, instructions, recipe_id])
+    recipes.update_recipe(recipe_id, title, description, category_id, ingredients, instructions)
 
     return redirect(f"/recipe/{recipe_id}")
 
@@ -126,9 +109,7 @@ def remove_recipe_post():
 
     recipe_id = request.form["recipe_id"]
     if "remove" in request.form:
-        user_id_query = "SELECT user_id FROM recipes WHERE id = ?"
-        user_id_result = db.query(user_id_query, [recipe_id])
-        if not user_id_result or user_id_result[0]["user_id"] != session["user_id"]:
+        if not recipes.is_recipe_owner(recipe_id, session["user_id"]):
             abort(403)
         recipes.delete_recipe(recipe_id)
         return redirect("/")
@@ -144,13 +125,26 @@ def create():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
+
+    if not username or not password1 or not password2:
+        return "VIRHE: Kaikki kentät ovat pakollisia"
+
     if password1 != password2:
         return "VIRHE: salasanat eivät ole samat"
+
+    if len(password1) < 8:
+        return "VIRHE: salasanan tulee olla vähintään 8 merkkiä pitkä"
+
+    if len(username) > 20:
+        return "VIRHE: käyttäjänimi on liian pitkä"
+
+    if not username.isalnum():
+        return "VIRHE: käyttäjänimi saa sisältää vain kirjaimia ja numeroita"
+
     password_hash = generate_password_hash(password1)
 
     try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
+        users.create_user(username, password_hash)
     except sqlite3.IntegrityError:
         return "VIRHE: tunnus on jo varattu"
 
@@ -165,22 +159,23 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result = db.query(sql, [username])
+        if not username or not password:
+            return "VIRHE: Käyttäjänimi ja salasana ovat pakollisia"
 
-        if not result:
+        if len(username) > 50:
+            return "VIRHE: käyttäjänimi on liian pitkä"
+
+        if not username.isalnum():
+            return "VIRHE: käyttäjänimi saa sisältää vain kirjaimia ja numeroita"
+
+        user = users.get_user(username)
+        if not user or not check_password_hash(user["password_hash"], password):
             return "VIRHE: väärä tunnus tai salasana"
 
-        user_id = result[0]["id"]
-        password_hash = result[0]["password_hash"]
-
-        if check_password_hash(password_hash, password):
-            session.permanent = True
-            session["user_id"] = user_id
-            session["username"] = username
-            return redirect("/")
-        else:
-            return "VIRHE: väärä tunnus tai salasana"
+        session.permanent = True
+        session["user_id"] = user["id"]
+        session["username"] = username
+        return redirect("/")
 
 @app.route("/logout")
 def logout():
