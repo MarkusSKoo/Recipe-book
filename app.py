@@ -91,13 +91,20 @@ def update_recipe():
 
     recipe_id = request.form["recipe_id"]
     title = request.form["title"]
+    if not title or len(title) > 50:
+        abort(403)
     description = request.form["description"]
+    if not description or len(description) > 1000:
+        abort(403)
     category = request.form["category"]
+    if not category:
+        abort(403)
     ingredients = request.form["ingredients"]
+    if not ingredients or len(ingredients) > 1000:
+        abort(403)
     instructions = request.form["instructions"]
-
-    if not all([title, description, category, ingredients, instructions]):
-        return "VIRHE: Kaikki kentät ovat pakollisia"
+    if not instructions or len(instructions) > 5000:
+        abort(403)
 
     if not recipes.is_recipe_owner(recipe_id, session["user_id"]):
         abort(403)
