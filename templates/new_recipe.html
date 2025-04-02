@@ -10,11 +10,11 @@
   <form action="/create_recipe" method="post">
     <p>
       Otsikko: <br />
-      <input type="text" name="title" required />
+      <input type="text" name="title" required maxlength="50"/>
     </p>
     <p>
       Kuvaus: <br />
-      <textarea name="description" rows="8" cols="60" required></textarea>
+      <textarea name="description" rows="8" cols="60" required maxlength="1000"></textarea>
     </p>
     <p>
       Kategoria: <br />
@@ -34,11 +34,11 @@
     </p>
     <p>
       Ainekset: <br />
-      <textarea name="ingredients" rows="8" cols="60" required></textarea>
+      <textarea name="ingredients" rows="8" cols="60" required maxlength="1000"></textarea>
     </p>
     <p>
       Valmistusohje: <br />
-      <textarea name="instructions" rows="8" cols="60" required></textarea>
+      <textarea name="instructions" rows="8" cols="60" required maxlength="5000"></textarea>
     </p>
     <p>
       <input type="submit" value="Luo resepti" />
