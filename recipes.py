@@ -1,9 +1,9 @@
 import db
 
-def add_recipe(user_id, title, description, category_id, ingredients, instructions):
-    sql = """INSERT INTO recipes (user_id, title, description, category_id, ingredients, instructions)
-             VALUES (?, ?, ?, ?, ?, ?)"""
-    db.execute(sql, [user_id, title, description, category_id, ingredients, instructions])
+def add_recipe(user_id, title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions):
+    sql = """INSERT INTO recipes (user_id, title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
+    db.execute(sql, [user_id, title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions])
 
 def get_recipes():
     sql = "SELECT id, title, user_id FROM recipes ORDER BY id DESC"
@@ -13,26 +13,29 @@ def get_recipe(recipe_id):
     sql = """SELECT recipes.id,
                     recipes.title,
                     recipes.description,
+                    recipes.dish_type,
+                    recipes.dietary_restriction,
+                    recipes.spiciness,
                     recipes.ingredients,
                     recipes.instructions,
                     users.id user_id,
-                    categories.name AS category,
                     users.username
             FROM recipes
             JOIN users ON recipes.user_id = users.id
-            JOIN categories ON recipes.category_id = categories.id
             WHERE recipes.id = ?"""
     result = db.query(sql, [recipe_id])
     return result[0] if result else None
 
-def update_recipe(recipe_id, title, description, category_id, ingredients, instructions):
+def update_recipe(recipe_id, title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions):
     sql = """UPDATE recipes SET title = ?,
                                 description = ?,
-                                category_id = ?,
+                                dish_type = ?,
+                                dietary_restriction = ?,
+                                spiciness = ?,
                                 ingredients = ?,
                                 instructions = ?
                             WHERE id = ?"""
-    db.execute(sql, [title, description, category_id, ingredients, instructions, recipe_id])
+    db.execute(sql, [title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions, recipe_id])
 
 def delete_recipe(recipe_id):
     sql = "DELETE FROM recipes WHERE id = ?"

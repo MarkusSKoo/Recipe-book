@@ -61,8 +61,14 @@ def create_recipe():
     description = request.form["description"]
     if not description or len(description) > 1000:
         abort(403)
-    category = request.form["category"]
-    if not category:
+    dish_type = request.form["dish_type"]
+    if not dish_type:
+        abort(403)
+    dietary_restriction = request.form["dietary_restriction"]
+    if not dietary_restriction:
+        abort(403)
+    spiciness = request.form["spiciness"]
+    if not spiciness:
         abort(403)
     ingredients = request.form["ingredients"]
     if not ingredients or len(ingredients) > 1000:
@@ -75,11 +81,9 @@ def create_recipe():
     if not user_id:
         return "VIRHE: Käyttäjää ei löydy"
 
-    category_id = recipes.get_or_create_category(category)
-    if not category_id:
-        return "VIRHE: Kategorian lisääminen epäonnistui"
+    recipes.add_recipe(user_id, title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions)
 
-    recipes.add_recipe(user_id, title, description, category_id, ingredients, instructions)
+    return redirect("/")
 
     return redirect("/")
 
@@ -104,8 +108,14 @@ def update_recipe():
     description = request.form["description"]
     if not description or len(description) > 1000:
         abort(403)
-    category = request.form["category"]
-    if not category:
+    dish_type = request.form["dish_type"]
+    if not dish_type:
+        abort(403)
+    dietary_restriction = request.form["dietary_restriction"]
+    if not dietary_restriction:
+        abort(403)
+    spiciness = request.form["spiciness"]
+    if not spiciness:
         abort(403)
     ingredients = request.form["ingredients"]
     if not ingredients or len(ingredients) > 1000:
@@ -117,11 +127,7 @@ def update_recipe():
     if not recipes.is_recipe_owner(recipe_id, session["user_id"]):
         abort(403)
 
-    category_id = recipes.get_or_create_category(category)
-    if not category_id:
-        return "VIRHE: Kategorian lisääminen epäonnistui"
-
-    recipes.update_recipe(recipe_id, title, description, category_id, ingredients, instructions)
+    recipes.update_recipe(recipe_id, title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions)
 
     return redirect(f"/recipe/{recipe_id}")
 

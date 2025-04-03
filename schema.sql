@@ -14,11 +14,12 @@ CREATE TABLE recipes (
     user_id INTEGER,
     title TEXT,
     description TEXT,
-    category_id INTEGER,
+    dish_type TEXT,
+    dietary_restriction TEXT,
+    spiciness TEXT,
     ingredients TEXT,
     instructions TEXT,
-    FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(category_id) REFERENCES categories(id)
+    FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 CREATE TABLE comments (

@@ -18,19 +18,30 @@
       <textarea name="description" rows="8" cols="60" required maxlength="1000">{{ recipe.description }}</textarea>
     </p>
     <p>
-      Kategoria: <br />
-      <select name="category" required>
-        <option value="">Valitse kategoria</option>
-        <option value="alkuruoka" {% if recipe.category == 'alkuruoka' %}selected{% endif %}>Alkuruoka</option>
-        <option value="pääruoka" {% if recipe.category == 'pääruoka' %}selected{% endif %}>Pääruoka</option>
-        <option value="jälkiruoka" {% if recipe.category == 'jälkiruoka' %}selected{% endif %}>Jälkiruoka</option>
-        <option value="intialainen" {% if recipe.category == 'intialainen' %}selected{% endif %}>Intialainen</option>
-        <option value="vegaaninen" {% if recipe.category == 'vegaaninen' %}selected{% endif %}>Vegaaninen</option>
-        <option value="eurooppalainen" {% if recipe.category == 'eurooppalainen' %}selected{% endif %}>Eurooppalainen</option>
-        <option value="Kiinalainen" {% if recipe.category == 'Kiinalainen' %}selected{% endif %}>Kiinalainen</option>
-        <option value="tulinen" {% if recipe.category == 'tulinen' %}selected{% endif %}>Tulinen</option>
-        <option value="ei tulinen" {% if recipe.category == 'ei tulinen' %}selected{% endif %}>Ei tulinen</option>
-        <option value="muu" {% if recipe.category == 'muu' %}selected{% endif %}>Muu</option>
+      Ruokalaji: <br />
+      <select name="dish_type" required>
+        <option value="">Valitse ruokalaji</option>
+        <option value="alkuruoka" {% if recipe.dish_type == 'alkuruoka' %}selected{% endif %}>Alkuruoka</option>
+        <option value="pääruoka" {% if recipe.dish_type == 'pääruoka' %}selected{% endif %}>Pääruoka</option>
+        <option value="jälkiruoka" {% if recipe.dish_type == 'jälkiruoka' %}selected{% endif %}>Jälkiruoka</option>
+      </select>
+    </p>
+    <p>
+      Ruokarajoitus: <br />
+      <select name="dietary_restriction" required>
+        <option value="">Valitse ruokarajoitus</option>
+        <option value="ei rajoituksia" {% if recipe.dietary_restriction == 'ei_rajoituksia' %}selected{% endif %}>Ei rajoituksia</option>
+        <option value="kasvisruoka" {% if recipe.dietary_restriction == 'kasvisruoka' %}selected{% endif %}>Kasvisruoka</option>
+        <option value="vegaaninen" {% if recipe.dietary_restriction == 'vegaaninen' %}selected{% endif %}>Vegaaninen</option>
+      </select>
+    </p>
+    <p>
+      Tulisuus: <br />
+      <select name="spiciness" required>
+        <option value="">Valitse tulisuus</option>
+        <option value="ei tulinen" {% if recipe.spiciness == 'ei_tulinen' %}selected{% endif %}>Ei tulinen</option>
+        <option value="mieto" {% if recipe.spiciness == 'mieto' %}selected{% endif %}>Mieto</option>
+        <option value="tulinen" {% if recipe.spiciness == 'tulinen' %}selected{% endif %}>Tulinen</option>
       </select>
     </p>
     <p>

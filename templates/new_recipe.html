@@ -17,19 +17,30 @@
       <textarea name="description" rows="8" cols="60" required maxlength="1000"></textarea>
     </p>
     <p>
-      Kategoria: <br />
-      <select name="category" required>
-        <option value="">Valitse kategoria</option>
+      Ruokalaji: <br />
+      <select name="dish_type" required>
+        <option value="">Valitse ruokalaji</option>
         <option value="alkuruoka">Alkuruoka</option>
         <option value="pääruoka">Pääruoka</option>
         <option value="jälkiruoka">Jälkiruoka</option>
-        <option value="intialainen">Intialainen</option>
+      </select>
+    </p>
+    <p>
+      Ruokarajoitus: <br />
+      <select name="dietary_restriction" required>
+        <option value="">Valitse ruokarajoitus</option>
+        <option value="ei rajoituksia">Ei rajoituksia</option>
+        <option value="kasvisruoka">Kasvisruoka</option>
         <option value="vegaaninen">Vegaaninen</option>
-        <option value="eurooppalainen">Eurooppalainen</option>
-        <option value="Kiinalainen">Kiinalainen</option>
-        <option value="tulinen">Tulinen</option>
+      </select>
+    </p>
+    <p>
+      Tulisuus: <br />
+      <select name="spiciness" required>
+        <option value="">Valitse tulisuus</option>
         <option value="ei tulinen">Ei tulinen</option>
-        <option value="muu">Muu</option>
+        <option value="mieto">Mieto</option>
+        <option value="tulinen">Tulinen</option>
       </select>
     </p>
     <p>
