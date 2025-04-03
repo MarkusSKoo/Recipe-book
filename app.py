@@ -168,11 +168,8 @@ def create():
 
     password_hash = generate_password_hash(password1)
 
-    try:
-        users.create_user(username, password_hash)
-    except sqlite3.IntegrityError:
+    if not users.create_user(username, password_hash):
         return "VIRHE: tunnus on jo varattu"
-
     return "Tunnus luotu"
 
 @app.route("/login", methods=["GET", "POST"])
