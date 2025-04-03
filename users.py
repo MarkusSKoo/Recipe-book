@@ -1,5 +1,14 @@
 import db
 
+def get_user_info(user_id):
+    sql = "SELECT id, username FROM users WHERE id = ?"
+    result = db.query(sql, [user_id])
+    return result[0] if result else None
+
+def get_recipes(user_id):
+    sql = "SELECT id, title FROM recipes WHERE user_id = ? ORDER BY id DESC"
+    return db.query(sql, [user_id])
+
 def create_user(username, password_hash):
     if get_user(username):
         return False

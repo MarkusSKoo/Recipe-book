@@ -39,6 +39,9 @@
     <a href="/remove_recipe/{{ recipe.id }}">Poista</a>
   </p>
   {% endif %}
+  <p>
+    Ilmoittaja: <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a>
+  </p>
   
   <p><strong>Kuvaus:</strong> {{ recipe.description }}</p>
   <p><strong>Kategoria:</strong> {{ recipe.category }}</p>
