@@ -1,11 +1,11 @@
 import sqlite3
 from flask import Flask, abort, redirect, render_template, request, session
-from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
 import recipes
 import users
 from datetime import timedelta
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -174,9 +174,7 @@ def create():
     if not username.isalnum():
         return "VIRHE: käyttäjänimi saa sisältää vain kirjaimia ja numeroita"
 
-    password_hash = generate_password_hash(password1)
-
-    if not users.create_user(username, password_hash):
+    if not users.create_user(username, password1):
         return "VIRHE: tunnus on jo varattu"
     return "Tunnus luotu"
 

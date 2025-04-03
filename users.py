@@ -1,4 +1,5 @@
 import db
+from werkzeug.security import check_password_hash, generate_password_hash
 
 def get_user_info(user_id):
     sql = "SELECT id, username FROM users WHERE id = ?"
@@ -9,7 +10,8 @@ def get_recipes(user_id):
     sql = "SELECT id, title FROM recipes WHERE user_id = ? ORDER BY id DESC"
     return db.query(sql, [user_id])
 
-def create_user(username, password_hash):
+def create_user(username, password):
+    password_hash = generate_password_hash(password)
     if get_user(username):
         return False
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
