@@ -3,32 +3,6 @@
 
 <head>
   <title>{{ recipe.title }}</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    h1 {
-      font-size: 24px;
-      color: #333;
-    }
-    p {
-      font-size: 18px;
-      color: #555;
-    }
-    .preserve-whitespace {
-      white-space: pre-wrap;
-      font-size: 18px;
-      color: #555;
-    }
-    a {
-      color: #0066cc;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
 </head>
 
 <body>
@@ -40,17 +14,30 @@
   </p>
   {% endif %}
   <p>
+    Kuvaus:
+    {{ recipe.description }}
+  </p>
+  <p>
+    Ainekset:
+    {{ recipe.ingredients }}
+  </p>
+  <p>
+    Ohjeet:
+    {{ recipe.instructions }}
+  </p>
+  <p>
     Ilmoittaja: <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a>
   </p>
-  
-  <p><strong>Kuvaus:</strong> {{ recipe.description }}</p>
-  <p><strong>Ruokalaji:</strong> {{ recipe.dish_type }}</p>
-  <p><strong>Ruokarajoitus:</strong> {{ recipe.dietary_restriction }}</p>
-  <p><strong>Tulisuus:</strong> {{ recipe.spiciness }}</p>
-  <p><strong>Ainekset:</strong></p>
-  <p class="preserve-whitespace">{{ recipe.ingredients }}</p>
-  <p><strong>Ohjeet:</strong></p>
-  <p class="preserve-whitespace">{{ recipe.instructions }}</p>
+  {% if classes %}
+  <p>
+    Luokat:
+    <ul>
+      {% for class in classes %}
+      <li>{{ class.title }}: {{ class.value }}</li>
+      {% endfor %}
+    </ul>
+  </p>
+  {% endif %}
 
   <p><a href="/">Takaisin</a></p>
 </body>

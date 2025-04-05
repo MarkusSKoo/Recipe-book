@@ -44,12 +44,15 @@ def show_recipe(recipe_id):
     recipe = recipes.get_recipe(recipe_id)
     if not recipe:
         abort(404)
-    return render_template("show_recipe.html", recipe=recipe)
+    classes = recipes.get_classes(recipe_id)
+
+    return render_template("show_recipe.html", recipe=recipe, classes=classes)
 
 @app.route("/new_recipe")
 def new_recipe():
     require_login()
-    return render_template("new_recipe.html")
+    classes = recipes.get_all_classes()
+    return render_template("new_recipe.html", classes=classes)
 
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
@@ -61,31 +64,29 @@ def create_recipe():
     description = request.form["description"]
     if not description or len(description) > 1000:
         abort(403)
-    dish_type = request.form["dish_type"]
-    if not dish_type:
-        abort(403)
-    dietary_restriction = request.form["dietary_restriction"]
-    if not dietary_restriction:
-        abort(403)
-    spiciness = request.form["spiciness"]
-    if not spiciness:
-        abort(403)
     ingredients = request.form["ingredients"]
     if not ingredients or len(ingredients) > 1000:
         abort(403)
     instructions = request.form["instructions"]
     if not instructions or len(instructions) > 5000:
         abort(403)
+    user_id = session["user_id"]
 
-    user_id = users.get_user_id(session["username"])
-    if not user_id:
-        return "VIRHE: Käyttäjää ei löydy"
+    all_classes = recipes.get_all_classes()
 
-    recipes.add_recipe(user_id, title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions)
+    classes = []
+    for entry in request.form.getlist("classes"):
+        if entry:
+            class_title, class_value = entry.split(":")
+            if class_title not in all_classes:
+                abort(403)
+            if class_value not in all_classes[class_title]:
+                abort(403)
+            classes.append((class_title, class_value))
 
-    return redirect("/")
+    recipe_id = recipes.add_recipe(title, description, ingredients, instructions, user_id, classes)
 
-    return redirect("/")
+    return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/edit_recipe/<int:recipe_id>")
 def edit_recipe(recipe_id):
@@ -95,27 +96,33 @@ def edit_recipe(recipe_id):
         abort(404)
     if recipe["user_id"] != session["user_id"]:
         abort(403)
-    return render_template("edit_recipe.html", recipe=recipe)
+
+    all_classes = recipes.get_all_classes()
+    classes = {}
+    for my_class in all_classes:
+        classes[my_class] = ""
+    for entry in recipes.get_classes(recipe_id):
+        classes[entry["title"]] = entry["value"]
+    print(classes)
+
+    return render_template("edit_recipe.html", recipe=recipe, classes=classes, all_classes=all_classes)
 
 @app.route("/update_recipe", methods=["POST"])
 def update_recipe():
     require_login()
 
     recipe_id = request.form["recipe_id"]
+    recipe = recipes.get_recipe(recipe_id)
+    if not recipe:
+        abort(403)
+    if recipe["user_id"] != session["user_id"]:
+        abort(403)
+    
     title = request.form["title"]
     if not title or len(title) > 50:
         abort(403)
     description = request.form["description"]
     if not description or len(description) > 1000:
-        abort(403)
-    dish_type = request.form["dish_type"]
-    if not dish_type:
-        abort(403)
-    dietary_restriction = request.form["dietary_restriction"]
-    if not dietary_restriction:
-        abort(403)
-    spiciness = request.form["spiciness"]
-    if not spiciness:
         abort(403)
     ingredients = request.form["ingredients"]
     if not ingredients or len(ingredients) > 1000:
@@ -124,10 +131,19 @@ def update_recipe():
     if not instructions or len(instructions) > 5000:
         abort(403)
 
-    if not recipes.is_recipe_owner(recipe_id, session["user_id"]):
-        abort(403)
+    all_classes = recipes.get_all_classes()
 
-    recipes.update_recipe(recipe_id, title, description, dish_type, dietary_restriction, spiciness, ingredients, instructions)
+    classes = []
+    for entry in request.form.getlist("classes"):
+        if entry:
+            class_title, class_value = entry.split(":")
+            if class_title not in all_classes:
+                abort(403)
+            if class_value not in all_classes[class_title]:
+                abort(403)
+            classes.append((class_title, class_value))
+
+    recipes.update_recipe(recipe_id, title, description, ingredients, instructions, classes)
 
     return redirect(f"/recipe/{recipe_id}")
 

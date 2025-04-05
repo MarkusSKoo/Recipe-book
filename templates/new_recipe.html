@@ -16,33 +16,17 @@
       Kuvaus: <br />
       <textarea name="description" rows="8" cols="60" required maxlength="1000"></textarea>
     </p>
+    {% for class in classes %}
     <p>
-      Ruokalaji: <br />
-      <select name="dish_type" required>
-        <option value="">Valitse ruokalaji</option>
-        <option value="alkuruoka">Alkuruoka</option>
-        <option value="pääruoka">Pääruoka</option>
-        <option value="jälkiruoka">Jälkiruoka</option>
-      </select>
+      {{ class }}: <br />
+      <select name="classes">
+        <option value="classes">(valitse)</option>
+      {% for option in classes[class] %}
+        <option value="{{ class }}:{{ option }}"> {{ option }}</option>
+      {% endfor %}
+    </select>
     </p>
-    <p>
-      Ruokarajoitus: <br />
-      <select name="dietary_restriction" required>
-        <option value="">Valitse ruokarajoitus</option>
-        <option value="ei rajoituksia">Ei rajoituksia</option>
-        <option value="kasvisruoka">Kasvisruoka</option>
-        <option value="vegaaninen">Vegaaninen</option>
-      </select>
-    </p>
-    <p>
-      Tulisuus: <br />
-      <select name="spiciness" required>
-        <option value="">Valitse tulisuus</option>
-        <option value="ei tulinen">Ei tulinen</option>
-        <option value="mieto">Mieto</option>
-        <option value="tulinen">Tulinen</option>
-      </select>
-    </p>
+    {% endfor %}
     <p>
       Ainekset: <br />
       <textarea name="ingredients" rows="8" cols="60" required maxlength="1000"></textarea>
