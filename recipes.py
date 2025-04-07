@@ -29,6 +29,18 @@ def add_recipe(title, description, ingredients, instructions, user_id, classes):
 
     return recipe_id
 
+def add_comment(recipe_id, user_id, comment):
+    sql = "INSERT INTO comments (recipe_id, user_id, comment) VALUES (?, ?, ?)"
+    db.execute(sql, [recipe_id, user_id, comment])
+    return recipe_id
+
+def get_comments(recipe_id):
+    sql = """SELECT comment, users.id user_id, users.username
+            FROM comments, users
+            WHERE comments.recipe_id = ? AND comments.user_id = users.id
+            ORDER BY comments.id DESC"""
+    return db.query(sql, [recipe_id])
+
 def get_recipes():
     sql = "SELECT id, title, user_id FROM recipes ORDER BY id DESC"
     return db.query(sql)

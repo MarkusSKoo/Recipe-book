@@ -45,8 +45,8 @@ def show_recipe(recipe_id):
     if not recipe:
         abort(404)
     classes = recipes.get_classes(recipe_id)
-
-    return render_template("show_recipe.html", recipe=recipe, classes=classes)
+    comments = recipes.get_comments(recipe_id)
+    return render_template("show_recipe.html", recipe=recipe, classes=classes, comments=comments)
 
 @app.route("/new_recipe")
 def new_recipe():
@@ -85,6 +85,27 @@ def create_recipe():
             classes.append((class_title, class_value))
 
     recipe_id = recipes.add_recipe(title, description, ingredients, instructions, user_id, classes)
+
+    return redirect("/recipe/" + str(recipe_id))
+
+@app.route("/create_comment", methods=["POST"])
+def create_comment():
+    require_login()
+
+    comment = request.form["comment"]
+    if not comment or len(comment) > 1000:
+        abort(403)
+
+    recipe_id = request.form["recipe_id"]
+    recipe = recipes.get_recipe(recipe_id)
+    if not recipe:
+        abort(403)
+
+    user_id = session["user_id"]
+    if not user_id:
+        abort(403)
+
+    recipe_id = recipes.add_comment(recipe_id, user_id, comment)
 
     return redirect("/recipe/" + str(recipe_id))
 

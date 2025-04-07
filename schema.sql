@@ -34,10 +34,7 @@ CREATE TABLE recipes (
 
 CREATE TABLE comments (
     id INTEGER PRIMARY KEY,
-    recipe_id INTEGER,
-    user_id INTEGER,
-    comment TEXT,
-    rating INTEGER,
-    FOREIGN KEY(recipe_id) REFERENCES recipes(id),
-    FOREIGN KEY(user_id) REFERENCES users(id)
+    recipe_id INTEGER REFERENCES recipes,
+    user_id INTEGER REFERENCES users,
+    comment TEXT
 );
