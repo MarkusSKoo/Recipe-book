@@ -38,3 +38,11 @@ CREATE TABLE comments (
     user_id INTEGER REFERENCES users,
     comment TEXT
 );
+
+CREATE TABLE ratings (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES users,
+    recipe_id INTEGER REFERENCES recipes,
+    rating INTEGER CHECK(rating >=1 AND rating <= 5),
+    UNIQUE (user_id, recipe_id)
+);

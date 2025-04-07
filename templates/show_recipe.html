@@ -50,6 +50,28 @@
     <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
     <input type="submit" value="Lisää kommentti" />
   </form>
+  <h2>Arvostelu</h2>
+<p>
+  Reseptin keskiarvo: {{ average_rating }} / 5
+</p>
+
+{% if session.user_id %}
+  <form action="/rate_recipe" method="post">
+    <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+    <label for="rating">Anna arvosana (1-5):</label>
+    <select name="rating" id="rating">
+      {% for i in range(1, 6) %}
+        <option value="{{ i }}"
+          {% if user_rating == i %}selected{% endif %}
+        >{{ i }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Arvostele">
+  </form>
+{% else %}
+  <p><a href="/login">Kirjaudu sisään</a> arvioidaksesi reseptin.</p>
+{% endif %}
+
   <p>
     <a href="/">Takaisin</a>
   </p>

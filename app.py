@@ -46,7 +46,8 @@ def show_recipe(recipe_id):
         abort(404)
     classes = recipes.get_classes(recipe_id)
     comments = recipes.get_comments(recipe_id)
-    return render_template("show_recipe.html", recipe=recipe, classes=classes, comments=comments)
+    average_rating = recipes.get_average_rating(recipe_id)
+    return render_template("show_recipe.html", recipe=recipe, classes=classes, comments=comments, average_rating=average_rating)
 
 @app.route("/new_recipe")
 def new_recipe():
@@ -107,6 +108,25 @@ def create_comment():
 
     recipe_id = recipes.add_comment(recipe_id, user_id, comment)
 
+    return redirect("/recipe/" + str(recipe_id))
+
+@app.route("/rate_recipe", methods=["POST"])
+def rate_recipe():
+    require_login()
+    recipe_id = request.form["recipe_id"]
+    recipe = recipes.get_recipe(recipe_id)
+    if not recipe:
+        abort(403)
+
+    rating = int(request.form["rating"])
+    if not rating or rating < 1 or rating > 5:
+        abort(403)
+
+    user_id = session["user_id"]
+    if not user_id:
+        abort(403)
+
+    recipes.add_rating(recipe_id, user_id, rating)
     return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/edit_recipe/<int:recipe_id>")

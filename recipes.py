@@ -41,6 +41,19 @@ def get_comments(recipe_id):
             ORDER BY comments.id DESC"""
     return db.query(sql, [recipe_id])
 
+def add_rating(recipe_id, user_id, rating):
+    sql = """INSERT INTO ratings (recipe_id, user_id, rating)
+    VALUES (?, ?, ?)
+    ON CONFLICT(user_id, recipe_id) DO UPDATE SET rating=excluded.rating"""
+    db.execute(sql, [recipe_id, user_id, rating])
+
+def get_average_rating(recipe_id):
+    sql = "SELECT AVG(rating) AS rating FROM ratings WHERE recipe_id = ?"
+    result = db.query(sql, [recipe_id])
+    if result[0]["rating"]:
+        return round(result[0]["rating"], 2)
+    return 0.0
+
 def get_recipes():
     sql = "SELECT id, title, user_id FROM recipes ORDER BY id DESC"
     return db.query(sql)
