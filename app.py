@@ -103,7 +103,6 @@ def edit_recipe(recipe_id):
         classes[my_class] = ""
     for entry in recipes.get_classes(recipe_id):
         classes[entry["title"]] = entry["value"]
-    print(classes)
 
     return render_template("edit_recipe.html", recipe=recipe, classes=classes, all_classes=all_classes)
 
@@ -117,7 +116,7 @@ def update_recipe():
         abort(403)
     if recipe["user_id"] != session["user_id"]:
         abort(403)
-    
+
     title = request.form["title"]
     if not title or len(title) > 50:
         abort(403)

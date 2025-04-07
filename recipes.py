@@ -28,7 +28,6 @@ def add_recipe(title, description, ingredients, instructions, user_id, classes):
         db.execute(sql, [recipe_id, class_title, class_value])
 
     return recipe_id
-    
 
 def get_recipes():
     sql = "SELECT id, title, user_id FROM recipes ORDER BY id DESC"
