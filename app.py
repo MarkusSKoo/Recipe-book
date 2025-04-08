@@ -194,6 +194,22 @@ def add_image():
     recipes.add_image(recipe_id, image)
     return redirect("/images/" + str(recipe_id))
 
+@app.route("/remove_images", methods=["POST"])
+def remove_images():
+    require_login()
+
+    recipe_id = request.form["recipe_id"]
+    recipe = recipes.get_recipe(recipe_id)
+    if not recipe:
+        abort(404)
+    if recipe["user_id"] != session["user_id"]:
+        abort(403)
+
+    for image_id in request.form.getlist("image_id"):
+        recipes.remove_image(recipe_id, image_id)
+
+    return redirect("/images/" + str(recipe_id))
+
 @app.route("/update_recipe", methods=["POST"])
 def update_recipe():
     require_login()
