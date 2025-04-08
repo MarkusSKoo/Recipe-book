@@ -1,44 +1,39 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Uusi resepti</title>
-</head>
+{% block title %}Uusi resepti{% endblock %}
 
-<body>
-  <h1>Uusi resepti</h1>
-  <form action="/create_recipe" method="post">
-    <p>
-      Otsikko: <br />
-      <input type="text" name="title" required maxlength="50"/>
-    </p>
-    <p>
-      Kuvaus: <br />
-      <textarea name="description" rows="8" cols="60" required maxlength="1000"></textarea>
-    </p>
-    {% for class in classes %}
-    <p>
-      {{ class }}: <br />
-      <select name="classes">
-        <option value="classes">(valitse)</option>
-      {% for option in classes[class] %}
-        <option value="{{ class }}:{{ option }}"> {{ option }}</option>
-      {% endfor %}
-    </select>
-    </p>
+{% block content %}
+<h2>Uusi resepti</h2>
+<form action="/create_recipe" method="post">
+  <p>
+    Otsikko: <br />
+    <input type="text" name="title" required maxlength="50"/>
+  </p>
+  <p>
+    Kuvaus: <br />
+    <textarea name="description" rows="8" cols="60" required maxlength="1000"></textarea>
+  </p>
+  {% for class in classes %}
+  <p>
+    {{ class }}: <br />
+    <select name="classes">
+      <option value="classes">(valitse)</option>
+    {% for option in classes[class] %}
+      <option value="{{ class }}:{{ option }}"> {{ option }}</option>
     {% endfor %}
-    <p>
-      Ainekset: <br />
-      <textarea name="ingredients" rows="8" cols="60" required maxlength="1000"></textarea>
-    </p>
-    <p>
-      Valmistusohje: <br />
-      <textarea name="instructions" rows="8" cols="60" required maxlength="5000"></textarea>
-    </p>
-    <p>
-      <input type="submit" value="Luo resepti" />
-    </p>
-  </form>
-</body>
-
-</html>
+  </select>
+  </p>
+  {% endfor %}
+  <p>
+    Ainekset: <br />
+    <textarea name="ingredients" rows="8" cols="60" required maxlength="1000"></textarea>
+  </p>
+  <p>
+    Valmistusohje: <br />
+    <textarea name="instructions" rows="8" cols="60" required maxlength="5000"></textarea>
+  </p>
+  <p>
+    <input type="submit" value="Luo resepti" />
+  </p>
+</form>
+{% endblock %}

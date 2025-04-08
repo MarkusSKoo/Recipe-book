@@ -1,49 +1,44 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Reseptin muokkaus</title>
-</head>
+{% block title %}Reseptin muokkaus{% endblock %}
 
-<body>
-  <h1>Reseptin muokkaus</h1>
-  <form action="/update_recipe" method="post">
-    <p>
-      <label for="title">Otsikko</label>: <br />
-      <input type="text" name="title" id="title" value="{{ recipe.title }}" maxlength="50" required />
-    </p>
-    <p>
-      <label for="description">Kuvaus</label>: <br />
-      <textarea name="description" id="description" rows="8" cols="60" maxlength="1000" required>{{ recipe.description }}</textarea>
-    </p>
-    <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
-    {% for class in all_classes %}
-    <p>
-      <label for="class{{ class }}">{{ class }}</a>: <br />
-      <select name="classes" id="class{{ class}}">
-        <option value="">(valitse)</option>
-        {% for option in all_classes[class] %}
-          {% if classes[class] == option %}
+{% block content %}
+<h2>Reseptin muokkaus</h2>
+<form action="/update_recipe" method="post">
+  <p>
+    <label for="title">Otsikko</label>: <br />
+    <input type="text" name="title" id="title" value="{{ recipe.title }}" maxlength="50" required />
+  </p>
+  <p>
+    <label for="description">Kuvaus</label>: <br />
+    <textarea name="description" id="description" rows="8" cols="60" maxlength="1000" required>{{ recipe.description }}</textarea>
+  </p>
+  <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+  {% for class in all_classes %}
+  <p>
+    <label for="class{{ class }}">{{ class }}</a>: <br />
+    <select name="classes" id="class{{ class}}">
+      <option value="">(valitse)</option>
+      {% for option in all_classes[class] %}
+        {% if classes[class] == option %}
         <option value="{{ class }}:{{ option }}" selected>{{ option }}</option>
         {% else %}
         <option value="{{ class }}:{{ option }}">{{ option }}</option>
         {% endif %}
-        {% endfor %}
-      </select>
-    </p>
-    {% endfor %}
-      Ainekset: <br />
-      <textarea name="ingredients" rows="8" cols="60" required maxlength="1000">{{ recipe.ingredients }}</textarea>
-    </p>
-    <p>
-      Valmistusohje: <br />
-      <textarea name="instructions" rows="8" cols="60" required maxlength="5000">{{ recipe.instructions }}</textarea>
-    </p>
-    <p>
-      <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
-      <input type="submit" value="Päivitä resepti" />
-    </p>
-  </form>
-</body>
-
-</html>
+      {% endfor %}
+    </select>
+  </p>
+  {% endfor %}
+    Ainekset: <br />
+    <textarea name="ingredients" rows="8" cols="60" required maxlength="1000">{{ recipe.ingredients }}</textarea>
+  </p>
+  <p>
+    Valmistusohje: <br />
+    <textarea name="instructions" rows="8" cols="60" required maxlength="5000">{{ recipe.instructions }}</textarea>
+  </p>
+  <p>
+    <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+    <input type="submit" value="Päivitä resepti" />
+  </p>
+</form>
+{% endblock %}

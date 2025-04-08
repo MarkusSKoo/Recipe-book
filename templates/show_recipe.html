@@ -1,84 +1,75 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>{{ recipe.title }}</title>
-</head>
+{% block title %}{{ recipe.title }}{% endblock %}
 
-<body>
-  <h1>{{ recipe.title }}</h1>
-   {% if session.user_id == recipe.user_id %}
-  <p>
-    <a href="/edit_recipe/{{ recipe.id }}">Muokkaa</a>
-    <a href="/remove_recipe/{{ recipe.id }}">Poista</a>
-    <a href="/images/{{ recipe.id }}">Kuvat</a>
-  </p>
-  {% endif %}
-  {% for image in images %}
-  <img src="/image/{{ image.id }}" />
-  {% endfor %}
-  <p>
-    Kuvaus:
-    {{ recipe.description }}
-  </p>
-  <p>
-    Ainekset:
-    {{ recipe.ingredients }}
-  </p>
-  <p>
-    Ohjeet:
-    {{ recipe.instructions }}
-  </p>
-  <p>
-    Ilmoittaja: <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a>
-  </p>
-  {% if classes %}
-  <p>
-    Luokat:
-    <ul>
-      {% for class in classes %}
-      <li>{{ class.title }}: {{ class.value }}</li>
-      {% endfor %}
-    </ul>
-  </p>
-  {% endif %}
-  <h2>Kommentit</h2>
+{% block content %}
+<h2>{{ recipe.title }}</h2>
+  {% if session.user_id == recipe.user_id %}
+<p>
+  <a href="/edit_recipe/{{ recipe.id }}">Muokkaa</a>
+  <a href="/remove_recipe/{{ recipe.id }}">Poista</a>
+  <a href="/images/{{ recipe.id }}">Kuvat</a>
+</p>
+{% endif %}
+{% for image in images %}
+<img src="/image/{{ image.id }}" />
+{% endfor %}
+<p>
+  Kuvaus:
+  {{ recipe.description }}
+</p>
+<p>
+  Ainekset:
+  {{ recipe.ingredients }}
+</p>
+<p>
+  Ohjeet:
+  {{ recipe.instructions }}
+</p>
+<p>
+  Ilmoittaja: <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a>
+</p>
+{% if classes %}
+<p>
+  Luokat:
   <ul>
-    {% for comment in comments %}
-    <li>{{ comment.comment }}, <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a></li>
+    {% for class in classes %}
+    <li>{{ class.title }}: {{ class.value }}</li>
     {% endfor %}
   </ul>
-  <h2>Uusi kommentti</h2>
-  <form action="/create_comment" method="post">
-    <textarea name="comment" rows="8" cols="60" required maxlength="1000"></textarea><br />
-    <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
-    <input type="submit" value="Lisää kommentti" />
-  </form>
-  <h2>Arvostelu</h2>
+</p>
+{% endif %}
+<h3>Kommentit</h3>
+<ul>
+  {% for comment in comments %}
+  <li>{{ comment.comment }}, <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a></li>
+  {% endfor %}
+</ul>
+<h3>Uusi kommentti</h3>
+<form action="/create_comment" method="post">
+  <textarea name="comment" rows="8" cols="60" required maxlength="1000"></textarea><br />
+  <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+  <input type="submit" value="Lisää kommentti" />
+</form>
+<h3>Arvostelu</h3>
 <p>
-  Reseptin keskiarvo: {{ average_rating }} / 5
+Reseptin keskiarvo: {{ average_rating }} / 5
 </p>
 
 {% if session.user_id %}
-  <form action="/rate_recipe" method="post">
-    <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
-    <label for="rating">Anna arvosana (1-5):</label>
-    <select name="rating" id="rating">
-      {% for i in range(1, 6) %}
-        <option value="{{ i }}"
-          {% if user_rating == i %}selected{% endif %}
-        >{{ i }}</option>
-      {% endfor %}
-    </select>
-    <input type="submit" value="Arvostele">
+<form action="/rate_recipe" method="post">
+  <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+  <label for="rating">Anna arvosana (1-5):</label>
+  <select name="rating" id="rating">
+    {% for i in range(1, 6) %}
+      <option value="{{ i }}"
+        {% if user_rating == i %}selected{% endif %}
+      >{{ i }}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" value="Arvostele">
   </form>
 {% else %}
   <p><a href="/login">Kirjaudu sisään</a> arvioidaksesi reseptin.</p>
 {% endif %}
-
-  <p>
-    <a href="/">Takaisin</a>
-  </p>
-</body>
-
-</html>
+{% endblock %}
