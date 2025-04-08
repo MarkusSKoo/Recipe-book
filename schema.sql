@@ -46,3 +46,9 @@ CREATE TABLE ratings (
     rating INTEGER CHECK(rating >=1 AND rating <= 5),
     UNIQUE (user_id, recipe_id)
 );
+
+CREATE TABLE images (
+    id INTEGER PRIMARY KEY,
+    recipe_id INTEGER REFERENCES recipes,
+    image BLOB
+);
