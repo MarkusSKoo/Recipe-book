@@ -45,18 +45,23 @@
   <li>{{ comment.comment }}, <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a></li>
   {% endfor %}
 </ul>
+{% if session.user_id %}
 <h3>Uusi kommentti</h3>
 <form action="/create_comment" method="post">
   <textarea name="comment" rows="8" cols="60" required maxlength="1000"></textarea><br />
   <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
   <input type="submit" value="Lisää kommentti" />
 </form>
+{% else %}
+  <p><a href="/login">Kirjaudu sisään</a> jättääksesi kommentti.</p>
+{% endif %}
 <h3>Arvostelu</h3>
 <p>
 Reseptin keskiarvo: {{ average_rating }} / 5
 </p>
 
 {% if session.user_id %}
+  {% if session.user_id != recipe.user_id %}
 <form action="/rate_recipe" method="post">
   <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
   <label for="rating">Anna arvosana (1-5):</label>
@@ -69,7 +74,8 @@ Reseptin keskiarvo: {{ average_rating }} / 5
   </select>
   <input type="submit" value="Arvostele">
   </form>
-{% else %}
+  {% endif %}
+{% elif not session.user_id %}
   <p><a href="/login">Kirjaudu sisään</a> arvioidaksesi reseptin.</p>
 {% endif %}
 {% endblock %}
