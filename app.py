@@ -41,7 +41,9 @@ def find_recipe():
 
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
+    print("Haettu resepti-ID:", recipe_id)
     recipe = recipes.get_recipe(recipe_id)
+    print("Resepti löytyi:", recipe)
     if not recipe:
         abort(404)
     classes = recipes.get_classes(recipe_id)

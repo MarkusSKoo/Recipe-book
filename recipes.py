@@ -72,8 +72,19 @@ def remove_image(recipe_id, image_id):
     db.execute(sql, [image_id, recipe_id])
 
 def get_recipes():
-    sql = "SELECT id, title, user_id FROM recipes ORDER BY id DESC"
+    sql = """SELECT recipes.id,
+               recipes.title,
+               users.id AS user_id,
+               users.username,
+               COUNT(ratings.id) AS ratings_count,
+               ROUND(AVG(ratings.rating), 1) AS average_rating
+        FROM recipes
+        JOIN users ON recipes.user_id = users.id
+        LEFT JOIN ratings ON recipes.id = ratings.recipe_id
+        GROUP BY recipes.id, users.id
+        ORDER BY recipes.id DESC"""
     return db.query(sql)
+
 
 def get_recipe(recipe_id):
     sql = """SELECT recipes.id,
@@ -105,6 +116,12 @@ def update_recipe(recipe_id, title, description, ingredients, instructions, clas
         db.execute(sql, [recipe_id, class_title, class_value])
 
 def delete_recipe(recipe_id):
+    sql = "DELETE FROM ratings WHERE recipe_id = ?"
+    db.execute(sql, [recipe_id])
+    sql = "DELETE FROM comments WHERE recipe_id = ?"
+    db.execute(sql, [recipe_id])
+    sql = "DELETE FROM images WHERE recipe_id = ?"
+    db.execute(sql, [recipe_id])
     sql = "DELETE FROM recipe_classes WHERE recipe_id = ?"
     db.execute(sql, [recipe_id])
     sql = "DELETE FROM recipes WHERE id = ?"

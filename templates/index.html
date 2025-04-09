@@ -5,9 +5,17 @@
 {% block content %}
 <h2>Reseptit</h2>
 
-<ul>
-  {% for recipe in recipes %}
-  <li><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></li>
-  {% endfor %}
+{% for recipe in recipes %}
+<div class="recipe">
+  <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a> <br />
+Reseptin lisääjä: <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a> <br />
+Arvostelujen määrä: {{ recipe.ratings_count }} <br />
+  {% if recipe.average_rating %}
+    Arvostelujen keskiarvo: {{ recipe.average_rating }} / 5
+  {% else %}
+    Ei arvosteluja vielä
+  {% endif %}
+</div>
+{% endfor %}
 </ul>
 {% endblock %}
