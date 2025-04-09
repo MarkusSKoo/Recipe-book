@@ -289,7 +289,7 @@ def create():
     password2 = request.form["password2"]
 
     if not username or not password1 or not password2:
-        flash("VIRHE: Kaikki kentät ovat pakollisia")
+        flash("VIRHE: kaikki kentät ovat pakollisia")
         return redirect("/register")
 
     if password1 != password2:
@@ -324,7 +324,7 @@ def login():
         password = request.form["password"]
 
         if not username or not password:
-            return "VIRHE: Käyttäjänimi ja salasana ovat pakollisia"
+            return "VIRHE: käyttäjänimi ja salasana ovat pakollisia"
 
         if len(username) > 50:
             return "VIRHE: käyttäjänimi on liian pitkä"
