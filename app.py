@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, abort, redirect, render_template, request, session, make_response
+from flask import Flask, abort, redirect, render_template, request, session, make_response, flash
 import db
 import config
 import recipes
@@ -187,11 +187,13 @@ def add_image():
 
     file = request.files["image"]
     if not file.filename.endswith(".png"):
-        return "VIRHE: väärä tiedostomuoto"
+        flash("VIRHE: väärä tiedostomuoto")
+        return redirect("/images/" + str(recipe_id))
 
     image = file.read()
     if len(image) > 100 * 1024:
-        return "VIRHE: liian suuri kuva"
+        flash("VIRHE: liian suuri kuva")
+        return redirect("/images/" + str(recipe_id))
 
     recipes.add_image(recipe_id, image)
     return redirect("/images/" + str(recipe_id))
@@ -287,23 +289,30 @@ def create():
     password2 = request.form["password2"]
 
     if not username or not password1 or not password2:
-        return "VIRHE: Kaikki kentät ovat pakollisia"
+        flash("VIRHE: Kaikki kentät ovat pakollisia")
+        return redirect("/register")
 
     if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
+        flash("VIRHE: salasanat eivät ole samat")
+        return redirect("/register")
 
     if len(password1) < 8:
-        return "VIRHE: salasanan tulee olla vähintään 8 merkkiä pitkä"
+        flash("VIRHE: salasanan tulee olla vähintään 8 merkkiä pitkä")
+        return redirect("/register")
 
     if len(username) > 20:
-        return "VIRHE: käyttäjänimi on liian pitkä"
+        flash("VIRHE: käyttäjänimi on liian pitkä")
+        return redirect("/register")
 
     if not username.isalnum():
-        return "VIRHE: käyttäjänimi saa sisältää vain kirjaimia ja numeroita"
+        flash("VIRHE: käyttäjänimi saa sisältää vain kirjaimia ja numeroita")
+        return redirect("/register")
 
     if not users.create_user(username, password1):
-        return "VIRHE: tunnus on jo varattu"
-    return "Tunnus luotu"
+        flash("VIRHE: tunnus on jo varattu")
+        return redirect("/register")
+    flash("Tunnus luotu")
+    return redirect("/login")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -325,7 +334,8 @@ def login():
 
         user = users.get_user(username)
         if not user or not check_password_hash(user["password_hash"], password):
-            return "VIRHE: väärä tunnus tai salasana"
+            flash("VIRHE: väärä tunnus tai salasana")
+            return redirect("/login")
 
         session.permanent = True
         session["user_id"] = user["id"]
