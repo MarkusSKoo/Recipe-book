@@ -3,12 +3,16 @@
 {% block title %}Reseptin poistaminen{% endblock %}
 
 {% block content %}
-<h2>Reseptin poistaminen</h2>
-<p>Resepti: {{ recipe.title }}</p>
+<h2>{{ recipe.title }}</h2>
+<h3>Reseptin poistaminen</h3>
+  Resepti: <a href="/recipe/{{ recipe.id }}"> {{ recipe.title }}</a>
 <p>Haluatko varmasti poistaa tämän reseptin?</p>
 <form action="/remove_recipe" method="post">
   <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
   <input type="submit" name="remove" value="Poista resepti" />
   <input type="submit" value="Palaa takaisin" />
 </form>
+<p>
+  <a href="/recipe/{{ recipe.id }}">Takaisin reseptiin</a>
+</p>
 {% endblock %}
