@@ -1,3 +1,4 @@
+import secrets
 import sqlite3
 from flask import Flask, abort, redirect, render_template, request, session, make_response, flash
 import db
@@ -14,6 +15,12 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
 def require_login():
     if "user_id" not in session:
+        abort(403)
+
+def check_csrf():
+    if "csrf_token" not in request.form:
+        abort(403)
+    if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
 
 @app.route("/")
@@ -72,6 +79,7 @@ def new_recipe():
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
     require_login()
+    check_csrf()
 
     title = request.form["title"]
     if not title or len(title) > 50:
@@ -106,6 +114,7 @@ def create_recipe():
 @app.route("/create_comment", methods=["POST"])
 def create_comment():
     require_login()
+    check_csrf()
 
     comment = request.form["comment"]
     if not comment or len(comment) > 1000:
@@ -127,6 +136,8 @@ def create_comment():
 @app.route("/rate_recipe", methods=["POST"])
 def rate_recipe():
     require_login()
+    check_csrf()
+
     recipe_id = request.form["recipe_id"]
     recipe = recipes.get_recipe(recipe_id)
     if not recipe:
@@ -177,6 +188,7 @@ def edit_images(recipe_id):
 @app.route("/add_image", methods=["POST"])
 def add_image():
     require_login()
+    check_csrf()
 
     recipe_id = request.form["recipe_id"]
     recipe = recipes.get_recipe(recipe_id)
@@ -201,6 +213,7 @@ def add_image():
 @app.route("/remove_images", methods=["POST"])
 def remove_images():
     require_login()
+    check_csrf()
 
     recipe_id = request.form["recipe_id"]
     recipe = recipes.get_recipe(recipe_id)
@@ -217,6 +230,7 @@ def remove_images():
 @app.route("/update_recipe", methods=["POST"])
 def update_recipe():
     require_login()
+    check_csrf()
 
     recipe_id = request.form["recipe_id"]
     recipe = recipes.get_recipe(recipe_id)
@@ -266,6 +280,8 @@ def remove_recipe(recipe_id):
 
 @app.route("/remove_recipe", methods=["POST"])
 def remove_recipe_post():
+    check_csrf()
+
     if "username" not in session:
         return redirect("/login")
 
@@ -284,6 +300,8 @@ def register():
 
 @app.route("/create", methods=["POST"])
 def create():
+    check_csrf()
+
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -316,12 +334,14 @@ def create():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "GET":
         return render_template("login.html")
 
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        session["csrf_token"] = secrets.token_hex(16)
 
         if not username or not password:
             return "VIRHE: käyttäjänimi ja salasana ovat pakollisia"

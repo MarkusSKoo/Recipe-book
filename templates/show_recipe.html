@@ -50,6 +50,7 @@
 <form action="/create_comment" method="post">
   <textarea name="comment" rows="8" cols="60" required maxlength="1000"></textarea><br />
   <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   <input type="submit" value="Lisää kommentti" />
 </form>
 {% else %}
@@ -72,6 +73,7 @@ Reseptin keskiarvo: {{ average_rating }} / 5
       >{{ i }}</option>
     {% endfor %}
   </select>
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   <input type="submit" value="Arvostele">
   </form>
   {% endif %}

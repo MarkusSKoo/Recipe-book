@@ -33,6 +33,7 @@
     <textarea name="instructions" rows="8" cols="60" required maxlength="5000"></textarea>
   </p>
   <p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Luo resepti" />
   </p>
 </form>

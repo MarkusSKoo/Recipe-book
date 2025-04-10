@@ -19,6 +19,7 @@
   <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
   <p>
     <input type="submit" value="Poista valitut" />
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   </p>
 </form>
 
@@ -28,6 +29,7 @@
     Kuva: <input type="file" name="image" accept=".png" />
   </p>
   <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   <input type="submit" value="Lähetä" />
 </form>
 <p>
