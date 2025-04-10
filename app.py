@@ -286,8 +286,12 @@ def remove_recipe_post():
         return redirect("/login")
 
     recipe_id = request.form["recipe_id"]
+    recipe = recipes.get_recipe(recipe_id)
+    if not recipe:
+        abort(403)
+
     if "remove" in request.form:
-        if not recipes.is_recipe_owner(recipe_id, session["user_id"]):
+        if recipe["user_id"] != session["user_id"]:
             abort(403)
         recipes.delete_recipe(recipe_id)
         return redirect("/")

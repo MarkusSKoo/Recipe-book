@@ -134,17 +134,3 @@ def find_recipes(query):
             ORDER BY id DESC"""
     like = "%" + query + "%"
     return db.query(sql, [like, like])
-
-def get_or_create_category(name):
-    category_id_query = "SELECT id FROM categories WHERE name = ?"
-    category_id_result = db.query(category_id_query, [name])
-    if not category_id_result:
-        insert_category_query = "INSERT INTO categories (name) VALUES (?)"
-        db.execute(insert_category_query, [name])
-        category_id_result = db.query(category_id_query, [name])
-    return category_id_result[0]["id"] if category_id_result else None
-
-def is_recipe_owner(recipe_id, user_id):
-    user_id_query = "SELECT user_id FROM recipes WHERE id = ?"
-    user_id_result = db.query(user_id_query, [recipe_id])
-    return user_id_result and user_id_result[0]["user_id"] == user_id
