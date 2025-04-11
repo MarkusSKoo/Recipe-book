@@ -1,11 +1,14 @@
-import markupsafe
-import secrets
 import sqlite3
+import secrets
+
 from flask import Flask, abort, redirect, render_template, request, session, make_response, flash
+import markupsafe
+
 import db
 import config
 import recipes
 import users
+
 from datetime import timedelta
 from werkzeug.security import check_password_hash, generate_password_hash
 
