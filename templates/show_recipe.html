@@ -16,15 +16,15 @@
 {% endfor %}
 <p>
   Kuvaus:
-  {{ recipe.description }}
+  {{ recipe.description | show_lines }}
 </p>
 <p>
   Ainekset:
-  {{ recipe.ingredients }}
+  {{ recipe.ingredients | show_lines }}
 </p>
 <p>
   Ohjeet:
-  {{ recipe.instructions }}
+  {{ recipe.instructions | show_lines }}
 </p>
 <p>
   Ilmoittaja: <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a>
@@ -42,7 +42,7 @@
 <h3>Kommentit</h3>
 <ul>
   {% for comment in comments %}
-  <li>{{ comment.comment }}, <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a></li>
+  <li>{{ comment.comment | show_lines }}, <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a></li>
   {% endfor %}
 </ul>
 {% if session.user_id %}
