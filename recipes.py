@@ -115,7 +115,7 @@ def update_recipe(recipe_id, title, description, ingredients, instructions, clas
     for class_title, class_value in classes:
         db.execute(sql, [recipe_id, class_title, class_value])
 
-def delete_recipe(recipe_id):
+def remove_recipe(recipe_id):
     sql = "DELETE FROM ratings WHERE recipe_id = ?"
     db.execute(sql, [recipe_id])
     sql = "DELETE FROM comments WHERE recipe_id = ?"
@@ -134,3 +134,4 @@ def find_recipes(query):
             ORDER BY id DESC"""
     like = "%" + query + "%"
     return db.query(sql, [like, like])
+

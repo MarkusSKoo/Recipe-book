@@ -1,16 +1,12 @@
-import sqlite3
 import secrets
+from datetime import timedelta
 
 from flask import Flask, abort, redirect, render_template, request, session, make_response, flash
 import markupsafe
 
-import db
 import config
 import recipes
 import users
-
-from datetime import timedelta
-from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -40,11 +36,11 @@ def index():
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
-    user = users.get_user_info(user_id)
+    user = users.get_user(user_id)
     if not user:
         abort(404)
-    recipes = users.get_recipes(user_id )
-    return render_template("show_user.html", user=user, recipes=recipes)
+    user_recipes = users.get_recipes(user_id)
+    return render_template("show_user.html", user=user, recipes=user_recipes)
 
 @app.route("/find_recipe")
 def find_recipe():
@@ -58,9 +54,7 @@ def find_recipe():
 
 @app.route("/recipe/<int:recipe_id>")
 def show_recipe(recipe_id):
-    print("Haettu resepti-ID:", recipe_id)
     recipe = recipes.get_recipe(recipe_id)
-    print("Resepti löytyi:", recipe)
     if not recipe:
         abort(404)
     classes = recipes.get_classes(recipe_id)
@@ -180,7 +174,8 @@ def edit_recipe(recipe_id):
     for entry in recipes.get_classes(recipe_id):
         classes[entry["title"]] = entry["value"]
 
-    return render_template("edit_recipe.html", recipe=recipe, classes=classes, all_classes=all_classes)
+    return render_template("edit_recipe.html", recipe=recipe, classes=classes,
+                           all_classes=all_classes)
 
 @app.route("/images/<int:recipe_id>")
 def edit_images(recipe_id):
@@ -278,35 +273,26 @@ def update_recipe():
 
     return redirect(f"/recipe/{recipe_id}")
 
-@app.route("/remove_recipe/<int:recipe_id>")
+@app.route("/remove_recipe/<int:recipe_id>", methods=["GET", "POST"])
 def remove_recipe(recipe_id):
     require_login()
+
     recipe = recipes.get_recipe(recipe_id)
     if not recipe:
         abort(404)
     if recipe["user_id"] != session["user_id"]:
         abort(403)
-    return render_template("remove_recipe.html", recipe=recipe)
 
-@app.route("/remove_recipe", methods=["POST"])
-def remove_recipe_post():
-    check_csrf()
+    if request.method == "GET":
+        return render_template("remove_recipe.html", recipe=recipe)
 
-    if "username" not in session:
-        return redirect("/login")
-
-    recipe_id = request.form["recipe_id"]
-    recipe = recipes.get_recipe(recipe_id)
-    if not recipe:
-        abort(403)
-
-    if "remove" in request.form:
-        if recipe["user_id"] != session["user_id"]:
-            abort(403)
-        recipes.delete_recipe(recipe_id)
-        return redirect("/")
-    else:
-        return redirect("/recipe/" + str(recipe_id))
+    if request.method == "POST":
+        check_csrf()
+        if "remove" in request.form:
+            recipes.remove_recipe(recipe_id)
+            return redirect("/")
+        else:
+            return redirect("/recipe/" + str(recipe_id))
 
 @app.route("/register")
 def register():
@@ -342,38 +328,28 @@ def create():
     if not users.create_user(username, password1):
         flash("VIRHE: tunnus on jo varattu")
         return redirect("/register")
+
     flash("Tunnus luotu")
     return redirect("/login")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-
     if request.method == "GET":
         return render_template("login.html")
 
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        session["csrf_token"] = secrets.token_hex(16)
 
-        if not username or not password:
-            return "VIRHE: käyttäjänimi ja salasana ovat pakollisia"
-
-        if len(username) > 50:
-            return "VIRHE: käyttäjänimi on liian pitkä"
-
-        if not username.isalnum():
-            return "VIRHE: käyttäjänimi saa sisältää vain kirjaimia ja numeroita"
-
-        user = users.get_user(username)
-        if not user or not check_password_hash(user["password_hash"], password):
+        user_id = users.check_login(username, password)
+        if user_id:
+            session["user_id"] = user_id
+            session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
+            return redirect("/")
+        else:
             flash("VIRHE: väärä tunnus tai salasana")
             return redirect("/login")
-
-        session.permanent = True
-        session["user_id"] = user["id"]
-        session["username"] = username
-        return redirect("/")
 
 @app.route("/logout")
 def logout():
