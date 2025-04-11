@@ -30,12 +30,12 @@
     </select>
   </p>
   {% endfor %}
-    Ainekset: <br />
-    <textarea name="ingredients" rows="8" cols="60" required maxlength="1000">{{ recipe.ingredients }}</textarea>
+    <label for="ingredients">Ainekset:</label> <br />
+    <textarea name="ingredients" id="ingredients" rows="8" cols="60" required maxlength="1000">{{ recipe.ingredients }}</textarea>
   </p>
   <p>
-    Valmistusohje: <br />
-    <textarea name="instructions" rows="8" cols="60" required maxlength="5000">{{ recipe.instructions }}</textarea>
+    <label for="instructions">Valmistusohje:</label> <br />
+    <textarea name="instructions" id="instructions" rows="8" cols="60" required maxlength="5000">{{ recipe.instructions }}</textarea>
   </p>
   <p>
     <input type="hidden" name="recipe_id" value="{{ recipe.id }}" />

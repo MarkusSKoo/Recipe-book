@@ -6,17 +6,17 @@
 <h2>Uusi resepti</h2>
 <form action="/create_recipe" method="post">
   <p>
-    Otsikko: <br />
-    <input type="text" name="title" required maxlength="50"/>
+    <label for="title">Otsikko:</label> <br />
+    <input type="text" name="title" id="title" required maxlength="50"/>
   </p>
   <p>
-    Kuvaus: <br />
-    <textarea name="description" rows="8" cols="60" required maxlength="1000"></textarea>
+    <label for="description">Kuvaus:</label> <br />
+    <textarea name="description" id="description" rows="8" cols="60" required maxlength="1000"></textarea>
   </p>
   {% for class in classes %}
   <p>
-    {{ class }}: <br />
-    <select name="classes" required>
+    <label for="class{{ class }}">{{ class }}</label>: <br />
+    <select name="classes" id="class{{ class }}" required>
       <option value="" disabled selected>(valitse)</option>
     {% for option in classes[class] %}
       <option value="{{ class }}:{{ option }}"> {{ option }}</option>
@@ -25,12 +25,12 @@
   </p>
   {% endfor %}
   <p>
-    Ainekset: <br />
-    <textarea name="ingredients" rows="8" cols="60" required maxlength="1000"></textarea>
+    <label for="ingredients">Ainekset:</label> <br />
+    <textarea name="ingredients" id="ingredients" rows="8" cols="60" required maxlength="1000"></textarea>
   </p>
   <p>
-    Valmistusohje: <br />
-    <textarea name="instructions" rows="8" cols="60" required maxlength="5000"></textarea>
+    <label for="instructions">Valmistusohje:</label> <br />
+    <textarea name="instructions" id="instructions" rows="8" cols="60" required maxlength="5000"></textarea>
   </p>
   <p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
