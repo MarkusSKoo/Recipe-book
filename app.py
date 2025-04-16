@@ -1,7 +1,5 @@
 import math
 import time
-
-import time
 import secrets
 
 from flask import Flask, abort, redirect, render_template, request, session, make_response, flash, g
@@ -134,6 +132,9 @@ def create_recipe():
                 abort(403)
             classes.append((class_title, class_value))
 
+    if len(classes) != len(all_classes):
+        abort(403)
+
     recipe_id = recipes.add_recipe(title, description, ingredients, instructions, user_id, classes)
 
     return redirect("/recipe/" + str(recipe_id))
@@ -170,7 +171,11 @@ def rate_recipe():
     if not recipe:
         abort(403)
 
-    rating = int(request.form["rating"])
+    try:
+        rating = int(request.form["rating"])
+    except:
+        abort(400)
+
     if not rating or rating < 1 or rating > 5:
         abort(403)
 
@@ -178,6 +183,8 @@ def rate_recipe():
     if not user_id:
         abort(403)
 
+    if recipe["user_id"] == user_id:
+        abort(403)
     recipes.add_rating(recipe_id, user_id, rating)
     return redirect("/recipe/" + str(recipe_id))
 
@@ -292,6 +299,9 @@ def update_recipe():
                 abort(403)
             classes.append((class_title, class_value))
 
+    if len(classes) != len(all_classes):
+        abort(403)
+
     recipes.update_recipe(recipe_id, title, description, ingredients, instructions, classes)
 
     return redirect(f"/recipe/{recipe_id}")
@@ -336,8 +346,8 @@ def create():
         flash("VIRHE: salasanat eivät ole samat")
         return redirect("/register")
 
-    if len(password1) < 8:
-        flash("VIRHE: salasanan tulee olla vähintään 8 merkkiä pitkä")
+    if len(password1) < 8 or len(password1) > 50:
+        flash("VIRHE: salasanan tulee olla 8-50 merkkiä pitkä")
         return redirect("/register")
 
     if len(username) > 20:

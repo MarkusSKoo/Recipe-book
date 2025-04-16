@@ -12,6 +12,19 @@ db.execute("DELETE FROM comments")
 db.execute("DELETE FROM ratings")
 db.execute("DELETE FROM images")
 
+db.execute("""INSERT INTO classes (title, value) VALUES
+('Ruokalaji', 'Alkuruoka'),
+('Ruokalaji', 'Pääruoka'),
+('Ruokalaji', 'Jälkiruoka'),
+
+('Ruokarajoitus', 'Ei rajoitusta'),
+('Ruokarajoitus', 'Kasvisruoka'),
+('Ruokarajoitus', 'Vegaaninen'),
+
+('Tulisuus', 'Ei tulinen'),
+('Tulisuus', 'Mieto'),
+('Tulisuus', 'Tulinen');""")
+
 user_count = 1000
 recipe_count = 10**5
 comment_count = 10**6
