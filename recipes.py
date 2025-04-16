@@ -1,5 +1,10 @@
 import db
 
+def recipe_count():
+    sql = "SELECT COUNT(*) FROM recipes"
+    result = db.query(sql)
+    return result[0][0]
+
 def get_all_classes():
     sql = "SELECT title, value FROM classes ORDER BY id"
     result = db.query(sql)
@@ -71,19 +76,23 @@ def remove_image(recipe_id, image_id):
     sql = "DELETE FROM images WHERE id = ? AND recipe_id = ?"
     db.execute(sql, [image_id, recipe_id])
 
-def get_recipes():
+def get_recipes(page, page_size):
     sql = """SELECT recipes.id,
                recipes.title,
                users.id AS user_id,
                users.username,
                COUNT(ratings.id) AS ratings_count,
-               ROUND(AVG(ratings.rating), 1) AS average_rating
+               ROUND(AVG(ratings.rating), 1) AS average_rating,
+               COUNT(recipes.id) total
         FROM recipes
         JOIN users ON recipes.user_id = users.id
         LEFT JOIN ratings ON recipes.id = ratings.recipe_id
         GROUP BY recipes.id, users.id
-        ORDER BY recipes.id DESC"""
-    return db.query(sql)
+        ORDER BY recipes.id DESC
+        LIMIT ? OFFSET ?"""
+    limit = page_size
+    offset = page_size * (page - 1)
+    return db.query(sql, [limit, offset])
 
 
 def get_recipe(recipe_id):

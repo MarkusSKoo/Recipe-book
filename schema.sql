@@ -52,3 +52,5 @@ CREATE TABLE images (
     recipe_id INTEGER REFERENCES recipes,
     image BLOB
 );
+
+CREATE INDEX idx_recipe_ratings ON ratings (recipe_id);
