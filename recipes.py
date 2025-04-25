@@ -143,4 +143,3 @@ def find_recipes(query):
             ORDER BY id DESC"""
     like = "%" + query + "%"
     return db.query(sql, [like, like])
-

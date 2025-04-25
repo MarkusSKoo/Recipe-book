@@ -35,13 +35,19 @@ for i in range(1, user_count + 1):
 
 for i in range(1, recipe_count + 1):
     user_id = random.randint(1, user_count)
-    result = db.execute("INSERT INTO recipes (user_id, title, description, ingredients, instructions) VALUES (?, ?, ?, ?, ?)",
+    result = db.execute("""INSERT INTO recipes
+                        (user_id, title, description, ingredients, instructions)
+                        VALUES (?, ?, ?, ?, ?)""",
                [user_id, "recipe" + str(i), str(i), str(i), str(i)])
-    
+
     recipe_id = result.lastrowid
-    
-    sql = "INSERT INTO recipe_classes (recipe_id, title, value) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)"
-    db.execute(sql, [recipe_id, "Ruokalaji", "Pääruoka", recipe_id, "Ruokarajoitus", "Kasvisruoka", recipe_id, "Tulisuus", "Mieto"])
+
+    sql = """INSERT INTO recipe_classes
+    (recipe_id, title, value)
+    VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)"""
+    db.execute(sql, [recipe_id, "Ruokalaji", "Pääruoka",
+                     recipe_id, "Ruokarajoitus", "Kasvisruoka",
+                     recipe_id, "Tulisuus", "Mieto"])
 
 for i in range(1, comment_count + 1):
     user_id = random.randint(1, user_count)
